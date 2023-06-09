@@ -1,0 +1,20 @@
+#http://localhost:8081/swagger-ui/index.html ===> swagger ui url
+server:
+  port: 8081
+
+# Database config
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/SpringbootSecurity
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        use_sql_comments: true
+        format_sql: true
+        show_sql: true
+
+appjwtSecret: KDmCIthmqx5LQmqrP4F4ynMUDkV6PxKKvUvTA2fyjAs=
