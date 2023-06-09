@@ -27,24 +27,20 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class UserController {
 
+    private final AuthenticationManager authenticationManager;
+
+    private final JwtUtils jwtUtils;
+
+    private final UserService userService;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private UserService userService;
-
-//    @Autowired
-//    public UserController(UserService userService,
-//                          AuthenticationManager authenticationManager,
-//                          JwtUtils jwtUtils) {
-//        this.userService = userService;
-//        this.authenticationManager = authenticationManager;
-//        this.jwtUtils = jwtUtils;
-//    }
+    public UserController(UserService userService,
+                          AuthenticationManager authenticationManager,
+                          JwtUtils jwtUtils) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtils = jwtUtils;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<Object> authenticateUser(@RequestBody LoginRequestDTO loginRequestDTO) {
@@ -52,16 +48,12 @@ public class UserController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequestDTO.getUsername(), loginRequestDTO.getPassword())
             );
-            log.info("authentication : {}", authentication);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwtToken = jwtUtils.generateJwtToken(authentication);
-            log.info("token : {}", jwtToken);
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            log.info("userDetails : {}", userDetails);
             List<String> roles = userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
-            log.info("roles : {}", roles);
             return new ResponseEntity<>(new JwtResponse(jwtToken,
                     userDetails.getId(),
                     userDetails.getUsername(),

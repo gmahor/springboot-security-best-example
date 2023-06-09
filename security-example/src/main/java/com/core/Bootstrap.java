@@ -46,7 +46,6 @@ public class Bootstrap implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         try {
-            log.info("Time stamp : {}", event.getTimestamp());
             createRole();
         } catch (Exception e) {
             log.error("Exception In On Application Event Service - ", e);

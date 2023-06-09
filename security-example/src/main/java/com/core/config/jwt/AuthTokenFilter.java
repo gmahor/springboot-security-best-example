@@ -21,15 +21,20 @@ import java.io.IOException;
 @Service
 public class AuthTokenFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    public AuthTokenFilter(JwtUtils jwtUtils,
+                           UserDetailsServiceImpl userDetailsService) {
+        this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
+    }
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
@@ -41,7 +46,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                         userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication : ", e);
