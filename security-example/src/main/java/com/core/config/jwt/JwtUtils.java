@@ -1,6 +1,6 @@
 package com.core.config.jwt;
 
-import com.core.config.UserDetailsImpl;
+import com.core.config.security.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

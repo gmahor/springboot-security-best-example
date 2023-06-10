@@ -1,7 +1,7 @@
 package com.core.service;
 
-import com.core.config.UserDetailsImpl;
 import com.core.config.jwt.JwtUtils;
+import com.core.config.security.UserDetailsImpl;
 import com.core.dto.JwtResponse;
 import com.core.dto.LoginRequestDTO;
 import com.core.dto.UserDTO;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,16 @@ public class UserService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         return new JwtResponse(jwtToken, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles);
+    }
+
+    public String deleteUser(long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            userRepository.delete(optionalUser.get());
+            return "User deleted successfully";
+        } else {
+            return null;
+        }
     }
 
 }

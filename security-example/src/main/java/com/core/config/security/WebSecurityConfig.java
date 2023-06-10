@@ -1,4 +1,4 @@
-package com.core.config;
+package com.core.config.security;
 
 import com.core.config.jwt.AuthEntryPointJwt;
 import com.core.config.jwt.AuthTokenFilter;

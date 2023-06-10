@@ -1,6 +1,6 @@
 package com.core.config.jwt;
 
-import com.core.config.UserDetailsServiceImpl;
+import com.core.config.security.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
