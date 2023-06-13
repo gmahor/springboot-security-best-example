@@ -76,4 +76,14 @@ public class UserController {
         }
     }
 
+    @PostMapping("/refreshToken")
+    public ResponseEntity<Object> refreshToken(@RequestParam(name = "tokenId") String tokenId) {
+        try {
+            return userService.refreshToken(tokenId);
+        } catch (Exception e) {
+            log.error("Error while creating refresh token : ", e);
+        }
+        return new ResponseEntity<>("Error while creating refresh token", HttpStatus.BAD_REQUEST);
+    }
+
 }

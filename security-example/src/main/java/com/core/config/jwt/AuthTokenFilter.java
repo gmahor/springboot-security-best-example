@@ -1,6 +1,7 @@
 package com.core.config.jwt;
 
 import com.core.config.security.UserDetailsServiceImpl;
+import com.core.constant.GenericConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,18 +35,25 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal( HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
-                String username = jwtUtils.getUserNameFromJwtToken(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            final String authorizationHeaderValue = request.getHeader("Authorization");
+            if (authorizationHeaderValue != null) {
+                if (authorizationHeaderValue.startsWith("Bearer")) {
+                    String jwt = parseJwt(request);
+                    if (jwt != null && jwtUtils.validateJwtToken(jwt, request)) {
+                        String username = jwtUtils.getUserNameFromJwtToken(jwt);
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities());
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
+                } else {
+                    request.setAttribute(GenericConstants.TOKEN_MESSAGE, "Token is not start with Bearer");
+                }
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication : ", e);
